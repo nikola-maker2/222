@@ -168,3 +168,81 @@ int main() {
 
     return 0;
 }
+-------------------------------------------------------
+#define _CRT_SECURE_NO_WARNINGS
+#include <stdio.h>
+#include <wchar.h>   
+#include <locale.h> 
+#include <wctype.h> 
+#include <string.h>
+
+const wchar_t* digitToWordW(int digit, wchar_t* result) {
+    const wchar_t helpDigit[][100] = { L"ноль",L"один",L"два",L"три",L"четыре",L"пять",L"шесть",L"семь",L"восемь",L"девять" };
+    return wcscpy(result, helpDigit[digit]);
+
+}
+
+int main() {
+
+    setlocale(LC_ALL, "");
+
+    const char* filename = "C:\\Users\\aemikhaylov\\source\\repos\\222\\input.txt";
+
+    FILE* file = fopen(filename, "r,ccs=UTF-8");
+    // FILE* file = fopen("text.txt", "r,windows - 1251");
+
+
+    if (file == NULL) {
+        fprintf(stderr, "Ошибка: не удалось открыть файл %s\n", filename);
+        return 1;
+    }
+
+    wint_t character;
+    int newSentence = 1;
+    wchar_t ws[80];
+    wchar_t sent[20][200] = { '\0' };
+    int i = 0;
+    while (fwscanf(file, L"%ls", ws) == 1) {
+        for (int i = 0; ws[i]; i++) {
+            if (ws[i] >= '0' && ws[i] <= '9') {
+                int d = ws[i] - '0';
+                wchar_t res[100];
+                digitToWordW(d, res);
+                wprintf(L"%ls", res);
+            }
+        }
+        wcscat(sent[i], (const wchar_t*)" ");
+        wcscat(sent[i], ws);
+        wprintf(L"%ls", sent[i]);
+        wcschr("!?.", ws[wcslen(ws) - 1] != NULL); {
+       
+        }
+
+    }
+
+    /*while ((character = fgetwc(file)) != WEOF) {
+        wchar_t c = (wchar_t)character;
+
+
+        if (newSentence && !iswspace(c)) {
+            wprintf(L"\n");
+            newSentence = 0;
+        }
+
+        if (iswdigit(c)) {
+            wprintf(L"%ws", digitToWordW(c));
+        }
+        else {
+            wprintf(L"%wc", c);
+            if (c == L'.' || c == L'!' || c == L'?') {
+                newSentence = 1;
+            }
+        }
+    }*/
+
+
+    fclose(file);
+    wprintf(L"\n");
+
+    return 0;
+}
