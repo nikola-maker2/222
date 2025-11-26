@@ -1,0 +1,170 @@
+#define _CRT_SECURE_NO_WARNINGS
+#include <stdio.h>
+#include <windows.h> 
+#include <locale.h> 
+
+int readSum(const char* fname) {
+    FILE* f;
+    
+    if (fopen_s(&f, fname, "r") != 0) {
+        
+        fprintf(stderr, "Ошибка в функции readSum: файл %s не открыт.\n", fname);
+        return -1;
+    }
+
+    int sum = 0;
+    int a;
+
+    while (fscanf_s(f, "%d", &a) == 1) {
+        sum += a; 
+    }
+
+    
+    fclose(f);
+
+    
+    return sum;
+}
+
+
+int main() {
+     
+    setlocale(LC_ALL, "");
+
+    
+    const char* filename = "C:\\Users\\aemikhaylov\\source\\repos\\23222\\input.txt";
+
+    
+    int totalSum = readSum(filename);
+
+    if (totalSum != -1) {
+        printf("Сумма всех чисел в файле: %d\n", totalSum);
+    }
+  
+
+    return 0;
+}
+---------------------------------------------------------------------
+#define _CRT_SECURE_NO_WARNINGS
+#include <stdio.h>
+#include <wchar.h>   
+#include <locale.h> 
+#include <wctype.h>  
+
+const wchar_t* digitToWordW(wchar_t digit) {
+    switch (digit) {
+    case L'0': return L"ноль";
+    case L'1': return L"один";
+    case L'2': return L"два";
+    case L'3': return L"три";
+    case L'4': return L"четыре";
+    case L'5': return L"пять";
+    case L'6': return L"шесть";
+    case L'7': return L"семь";
+    case L'8': return L"восемь";
+    case L'9': return L"девять";
+    default: return L"";
+    }
+}
+
+int main() {
+   
+    setlocale(LC_ALL, "");
+
+    const char* filename = "C:\\Users\\aemikhaylov\\source\\repos\\2 zadanie\\input.txt";
+   
+    FILE* file = fopen(filename, "r,ccs=UTF-8");
+
+    if (file == NULL) {
+        fprintf(stderr, "Ошибка: не удалось открыть файл %s\n", filename);
+        return 1;
+    }
+
+    wint_t character; 
+    int newSentence = 1;
+
+   
+    while ((character = fgetwc(file)) != WEOF) {
+        wchar_t c = (wchar_t)character;
+
+        
+        if (newSentence && !iswspace(c)) {
+            wprintf(L"\n"); 
+            newSentence = 0;
+        }
+
+        if (iswdigit(c)) {
+            wprintf(L"%ws", digitToWordW(c)); 
+        }
+        else {
+            wprintf(L"%wc", c); 
+            if (c == L'.' || c == L'!' || c == L'?') {
+                newSentence = 1;
+            }
+        }
+    }
+
+
+    fclose(file);
+    wprintf(L"\n");
+
+    return 0;
+}
+----------------------------------------------------------------------------------------------
+#include <stdio.h>
+#include <math.h>
+
+void printMatrix(int** matrix, int M, int N) {
+    for (int i = 0; i < M; i++) {
+        for (int j = 0; j < N; j++) {
+            printf("%3d ", matrix[i][j]);
+        }
+        printf("\n");
+    }
+    printf("\n");
+}
+
+int** cyclicShift(int** matrix, int N, int M, int k = 1) {
+    int** cycled_matrix = new int* [N];
+
+    for (int i = 0; i < N; i++) {
+        cycled_matrix[i] = new int[M];
+      
+        for (int j = 0; j < M; j++) {
+            cycled_matrix[i][j] = matrix[abs(i - k) % N][abs(j - k) % M];
+        }
+    }
+    return cycled_matrix;
+}
+
+int main() {
+    int M, N, k;
+
+    printf("Vvedite razmernost` M x N: ");
+    scanf_s("%d %d", &M, &N);
+
+    int** matrix = new int*[N];
+
+    printf("Vvedite kolichestvo sdvigov k: ");
+    scanf_s("%d", &k);
+
+   
+    int num = 1;
+    for (int i = 0; i < M; i++) {
+        matrix[i] = new int[M];
+        for (int j = 0; j < N; j++) {
+            matrix[i][j] = num;
+            num++;
+        }
+    }
+
+    printf("Ishodnaya matrica:\n");
+    printMatrix(matrix, M, N);
+
+    int** ma = cyclicShift(matrix, M, N, k);
+
+    printf("Matrica posle %d sdvigov:\n", k);
+    printMatrix(ma, M, N);
+
+    return 0;
+}
